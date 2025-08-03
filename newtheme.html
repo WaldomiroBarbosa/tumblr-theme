@@ -1,0 +1,760 @@
+<html>
+
+    <head>
+        <title>{Title}</title>
+        
+        <link rel="shortcut icon" href="{Favicon}">
+        <link rel="alternate" type="application/rss+xml" href="{RSS}">
+        <link href="https://fonts.googleapis.com/css2?family=Fascinate&display=swap" rel="stylesheet">
+        
+        <meta name="text:Disqus Shortname" content="" />
+        
+        {block:Description}
+            <meta name="description" content="{MetaDescription}" />
+        {/block:Description}
+
+        <style>
+
+            :root {
+                --color-main: purple;
+                --color-hover: hotpink;
+                --color-bg: white;
+                --color-text: black;
+            
+                --border-radius: 10px;
+                --max-width: 1000px;
+                --font-main: "Fascinate", system-ui;
+            }
+            
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+            }
+            
+   
+            #header {
+                margin: 45px;
+                margin-bottom: 15px;
+                border-radius: var(--border-radius);
+                width: var(--max-width);
+            }
+            
+            h1 {
+                text-align: center;
+                font-family: var(--font-main);
+                font-weight: bold;
+                font-size: 45px;
+                margin-top: 45px;
+                text-shadow: 2px 2px var(--color-main);
+            }
+            
+            .description {
+                text-align: center;
+                text-decoration: underline;
+                font-size: 13px;
+            }
+            
+            ul {
+                display: flex;
+                gap: 20px;
+                padding: 13px;
+                justify-content: center;
+            }
+            
+            .navitem:visited,
+            .navitem:link {
+                display: inline-block;
+                padding: 5px 10px;
+                font-size: 13px;
+                cursor: pointer;
+                text-align: center;
+                font-style: italic;
+                text-decoration: none;
+                color: var(--color-text);
+                background: var(--color-bg);
+                border: 2px solid var(--color-main);
+                box-shadow: 
+                    -3px 3px 0 var(--color-main),
+                    0 4px 8px rgba(128, 0, 128, 0.2);
+                transition: all 0.2s ease-in-out;
+            }
+            
+            .navitem:hover,
+            .navitem:active {
+                border-color: var(--color-hover);
+                background: #fff0f5;
+                box-shadow: 
+                    -1px 1px 0 var(--color-hover),
+                    0 2px 4px rgba(255, 105, 180, 0.3);
+                transform: translateY(1px);
+            }
+            
+
+            #posts {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .post-container {
+                display: flex;
+                align-items: flex-start;
+                max-width: var(--max-width);
+                margin: 8px auto;
+                position: relative;
+            }
+            
+            .author-info {
+                border-right: 3px double var(--color-main);
+                padding: 10px;
+                height: 130px;
+                width: 110px;
+                margin: 20px;
+                font-size: 13px;
+                position: absolute; 
+                right: 750px;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .like-reblog {
+                display: flex;
+                gap: 6px;
+                margin-top: 5px;
+                align-items: center;
+            }
+            
+            .like-button {
+                position: relative;
+                margin-top: 8px;
+            }
+            
+            .like-button svg path {
+                fill: var(--color-main);
+                transition: fill 0.2s ease;
+            }
+            
+            .like-button:hover svg path {
+                fill: var(--color-hover);
+            }
+            
+            .like-button .like_button {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                pointer-events: all;
+                z-index: 1;
+            }
+            
+            .like-button:has(.like_button.liked) svg path {
+                fill: var(--color-hover);
+            }
+            
+            .reblog-button svg path {
+                fill: var(--color-main);
+                transition: fill 0.2s;
+            }
+            
+            .reblog-button:hover svg path {
+                fill: var(--color-hover);
+            }
+            
+            .post {
+                width: 100%;
+                max-width: 700px;
+                margin: 25px;
+                margin-bottom: 1px;
+                border: 1px dotted var(--color-main);
+                outline: 1px dashed var(--color-text);
+                outline-offset: 3px;
+                padding: 25px 75px 75px 75px;
+            }
+            
+            .tags {
+                display: flex;
+                justify-content: flex-start;
+                width: 100%;
+                max-width: 700px;
+                gap: 4px;
+                
+                
+            }
+            
+            a.tag:visited,
+            a.tag:link {
+                font-size: 10px;
+                text-decoration: none;
+                color: white;
+                background: var(--color-main);
+                border-radius: 25px;
+                padding: 5px;
+                box-shadow: rgba(240, 46, 170, 0.4) 4px 4px;
+                transition: background 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            a.tag:hover,
+            a.tag:active {
+                background: var(--color-hover);
+                box-shadow: rgba(240, 46, 170, 0.4) 2px 2px;
+            }
+            
+            li {
+                display: inline;
+            }
+            
+            .disqus-comments {
+              width: 100%;
+              max-width: 700px;
+              min-height: 300px; 
+              margin: 20px auto;
+            }
+            
+            .notes-wrapper {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+                            rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+                outline: 1px dotted var(--color-main);
+                outline-offset: -6px;
+                border-radius: 16px;
+                max-height: 350px;
+                overflow-y: auto;
+                position: relative; 
+            }
+            
+            
+            .wr-notecount {
+                position: sticky;
+                top: 0; 
+                z-index: 2; 
+                font-size: 12px;
+                font-weight: bold;
+                background: white;
+                padding: 0 3px;
+                color: var(--color-main);
+                border-radius: 8px;
+                border: 1px solid var(--color-main);
+                margin-left: 6px;
+            
+                display: inline-block; 
+                width: auto;          
+            }
+                        
+            ol.notes {
+                font-size: 8px;
+                padding: 3px;
+                margin: 10px;
+                list-style-type: none;
+                display: flex;
+                flex-direction: column;
+                gap: 0; 
+            }
+
+            ol.notes li.note {
+                padding: 0.3rem;
+                position: relative;
+            }
+            
+
+            ol.notes li.note img.avatar {
+                vertical-align: 0px;
+                margin-right: 10px;
+                max-width: 700px;
+                height: 16px;
+                border-radius: 25px;
+                outline: 1px solid var(--color-main);
+                outline-offset: 1px;
+            }
+
+            ol.notes li.note .answer_content {
+                display: none;
+                font-weight: normal;
+            }
+
+            ol.notes li.note blockquote {
+                padding: 4px 10px;
+                margin: 10px 0px 0px 25px;
+            }
+
+            ol.notes li.note blockquote a {
+                text-decoration: none;
+            }
+
+            #footer {
+                display: flex;
+                flex-direction: column;
+                align-items: center; 
+            }
+
+            .pagination {
+                display: inline-block; 
+                gap: 8px; 
+                margin-top: 30px;
+                margin: 18px;
+                font-size: 8px;
+            }
+
+            .pagination a,
+            .pagination span {
+                color: var(--color-text);
+                padding: 8px 16px;
+                text-decoration: none;
+                border: 1px solid transparent;
+                font-size: 12px;
+                transition: background-color 0.2s ease;
+            }
+
+            .pagination a:hover {
+                background-color: var(--color-hover);
+            }
+
+            .pagination .current_page {
+                background-color: var(--color-main);
+                color: white;
+                font-weight: bold;
+                pointer-events: none;
+                border: 1px solid var(--color-main);
+            }
+
+            .theme-info {
+                margin: 8px;
+            }
+
+            
+        </style>
+    </head>
+
+    <body>
+
+        <!-- Blog Header -->
+        <div id="header">
+            <h1>{Title}</h1>
+    
+            <!-- Descricao foi retirada, mas deixei seu formato em HTML -->
+            {block:Description}
+                <p class="description"></p>
+            {/block:Description}
+    
+            <!-- Menu Principal -->
+            <nav id="tumblrnav">
+                <ul>
+                    <li><a class="navitem" href="{BlogURL}">início</a></li>
+                    <li><a class="navitem" href="/ask">pergunte</a></li>
+                    <li><a class="navitem" href="/archive">arquivo</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- ALL POST FORMATS-->
+        <div id="posts">
+        {block:Posts}
+            <div class="post-container">
+
+                <!-- Conteúdo à Esquerda do Post -->
+                <aside class="author-info">
+
+                    <!-- Botão de Informacoes de Autor/Post -->
+                    <img src="{PortraitURL-64}" alt="Avatar do autor">
+                    <a class="post-date" href="{Permalink}">{DayOfMonth} de {Month}, {Year}</a>
+                    <div class="post-notes">Notas: {NoteCount}</div>
+                      
+                    <!-- Botão de Like -->
+                    <div class="like-reblog">
+                        <div class="like-button">
+                            <svg width="14" height="14" viewBox="0 0 24 24">
+                                <path d="M14.0425097,0.000920262799 C16.1435097,-0.0400797372 18.8835097,1.28192026 
+                                18.9635097,5.36992026 C19.0525097,9.95492026 15.1985097,13.3079203 9.48350967,16.2089203 
+                                C3.76650967,13.3079203 -0.0874903349,9.95492026 0.00150966509,5.36992026 C0.0815096651,
+                                1.28192026 2.82150967,-0.0400797372 4.92250967,0.000920262799 C7.02450967,0.0419202628 
+                                8.87050967,2.26592026 9.46950967,2.92792026 C10.0945097,2.26592026 11.9405097,0.0419202628 
+                                14.0425097,0.000920262799 Z"/>
+                            </svg>
+                            {LikeButton size="14"}
+                        </div>
+                      
+                        <!-- Botão de Reblog -->
+                        <div class="reblog-button">
+                            {ReblogButton size="14"}
+                        </div>
+                    </div>
+
+                </aside>
+
+                <!--NPF & Legacy Text Posts-->
+                {block:Text}
+                    <div class="post text">
+            
+                        <!--Post Title-->
+                        {block:Title}
+                            <h3><a href="{Permalink}">{Title}</a></h3>
+                        {/block:Title}
+
+                        <!--Original Post-->
+                        {block:NotReblog}
+                            {Body}
+                        {/block:NotReblog}
+
+                        <!--Reblog Post-->
+                        {block:RebloggedFrom}
+                            <div class="reblog-list">
+                            {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        <span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+                                            
+                                <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+                            </div>
+                        {/block:RebloggedFrom}
+
+                    </div>
+                {/block:Text}
+
+                <!--All Answer posts including NPF-->
+                {block:Answer}
+                    <div class="post answer">
+
+                        <!--POST QUESTION-->
+                        <p><strong>{Asker}</strong> asked:</p>
+                        {Question}
+
+                        {block:Answerer}
+                            {Answer}
+                        {/block:Answerer}
+
+                        <!--Original Post-->
+                        {block:NotReblog}
+                            {Replies}
+                        {/block:NotReblog}
+
+                        <!--Reblog Post-->
+                        {block:RebloggedFrom}
+                            <div class="reblog-list">
+                            {block:Reblogs}
+
+                                    <div class="reblog-header">
+                                        <!--USERNAME LOGIC-->
+                                        {block:IsActive}
+                                            <a href="{Permalink}">{Username}</a>
+                                        {/block:IsActive}
+
+                                        {block:IsDeactivated}
+                                            <span>{Username}</span>
+                                        {/block:IsDeactivated}
+                                    </div>
+
+                                    <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+                            </div>
+                        {/block:RebloggedFrom}
+
+                    </div>
+                {/block:Answer}
+
+                <!--Legacy Photo Posts-->
+                {block:Photo}
+                    <div class="post photo">
+
+                    <img src="{PhotoURL-500}" alt="{PhotoAlt}"/>
+
+                    <!--Original Post-->
+                    {block:NotReblog}
+                        {Caption}
+                    {/block:NotReblog}
+
+                    <!--Post is a reblog-->
+                    {block:RebloggedFrom}
+                        <div class="reblog-list">
+                            {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        <span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+
+                                <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+                        </div>
+                    {/block:RebloggedFrom}
+
+                </div>
+            {/block:Photo}
+
+            <!--Legacy Photoset Posts-->
+            {block:Photoset}
+                <div class="post photoset">
+
+                    {Photoset}
+
+                    <!--Original Post-->
+                    {block:NotReblog}
+                        {Caption}
+                    {/block:NotReblog}
+
+                    <!--Post is a reblog-->
+                    {block:RebloggedFrom}
+                        <div class="reblog-header">
+                            {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        <span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+
+                                <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+                        </div>
+                    {/block:RebloggedFrom}
+
+                </div>
+            {/block:Photoset}
+
+                <!--Legacy Quote Posts-->
+                {block:Quote}
+                    <div class="post quote">
+
+                        "{Quote}"
+
+                        {block:Source}
+                            <div class="source">{Source}</div>
+                        {/block:Source}
+
+                    </div>
+                {/block:Quote}
+
+                <!--Legacy Link Posts-->
+                {block:Link}
+                    <div class="post link">
+
+                        <a href="{URL}" class="link" {Target}>{Name}</a>
+
+                        <!--Original Post-->
+                        {block:NotReblog}
+                            {Description}
+                        {/block:NotReblog}
+
+                        <!--Post is a reblog-->
+                        {block:RebloggedFrom}
+                            <div class="reblog-list">
+                                {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        <span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+
+                                <div class="reblog-body">{Body}</div>
+
+                                {/block:Reblogs}
+                            </div>
+                        {/block:RebloggedFrom}
+                        
+                    </div>
+                {/block:Link}
+
+                <!--Legacy Chat Posts-->
+                {block:Chat}
+                    <div class="post chat">
+
+                    {block:Title}
+                        <h3><a href="{Permalink}">{Title}</a></h3>
+                    {/block:Title}
+
+                    <ul class="chat">
+                        {block:Lines}
+
+                            <li class="{Alt} user_{UserNumber}">
+                                {block:Label}
+                                    <span class="label">{Label}</span>
+                                {/block:Label}
+
+                                {Line}
+                            </li>
+
+                        {/block:Lines}
+                    </ul>
+
+                    </div>
+                {/block:Chat}
+
+            <!--Legacy Video Posts-->
+            {block:Video}
+                <div class="post video">
+
+                    {Video-700}
+
+                    <!--Original Post-->
+                    {block:NotReblog}
+                        {Description}
+                    {/block:NotReblog}
+
+                    <!--Post is a reblog-->
+                    {block:RebloggedFrom}
+                        <div class="reblog-list">
+                            {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+
+                                <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+                        </div>
+                    {/block:RebloggedFrom}
+
+                </div>
+            {/block:Video}
+
+            <!--Legacy Audio Posts-->
+            {block:Audio}
+                <div class="post audio">
+
+                    {AudioEmbed}
+
+                    <!--Original Post-->
+                    {block:NotReblog}
+                        {Description}
+                    {/block:NotReblog}
+
+                    <!--Post is a reblog-->
+                    {block:RebloggedFrom}
+                        <div class="reblog-list">
+                            {block:Reblogs}
+
+                                <div class="reblog-header">
+                                    <!--USERNAME LOGIC-->
+                                    {block:IsActive}
+                                        <a href="{Permalink}">{Username}</a>
+                                    {/block:IsActive}
+
+                                    {block:IsDeactivated}
+                                        <span>{Username}</span>
+                                    {/block:IsDeactivated}
+                                </div>
+
+                                <div class="reblog-body">{Body}</div>
+
+                            {/block:Reblogs}
+
+                        </div>
+                    {/block:RebloggedFrom}
+
+                </div>
+            {/block:Audio}
+
+            </div>
+
+            <div class="tags">
+            {block:HasTags}
+                <ul>
+                    {block:Tags}
+                        <li><a class="tag" href="{TagURL}">#{Tag}</a></li>
+                    {/block:Tags}
+                </ul>
+            {/block:HasTags}
+            </div>
+            
+            {block:PermalinkPage}
+                {block:IfDisqusShortname}
+                    <div class="disqus-comments">
+                        <div id="disqus_thread"></div>
+                        <script type="text/javascript">
+                            (function() {
+                                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                dsq.src = 'http://{text:Disqus Shortname}.disqus.com/embed.js';
+                                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                            })();
+                        </script>
+                        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript={text:Disqus Shortname}">comments powered by Disqus.</a></noscript>
+                    </div>
+                {/block:IfDisqusShortname}
+            {/block:PermalinkPage}
+
+            {block:PostNotes}
+                <section class="notes-wrapper clearfix">
+                    <legend class="wr-notecount">{NoteCount}</legend>
+                    <div id="notes" class="notes-anchor"></div>
+                    {PostNotes-64}
+                </section>
+            {/block:PostNotes}
+        {block:Posts}
+        </div>
+
+        <div id="footer">
+            <div class="pagination">
+            {block:Pagination}
+
+                {block:FirstPage}
+                    <a href="{FirstPage}">&#9664;</a>
+                {/block:FirstPage}
+
+                {block:JumpPagination length="3"}
+                    {block:CurrentPage}
+                        <span class="current_page">{PageNumber}</span>
+                    {/block:CurrentPage}
+                    {block:JumpPage}
+                        <a class="jump_page" href="{URL}">{PageNumber}</a>
+                    {/block:JumpPage}
+                {/block:JumpPagination}
+                
+                {block:LastPage}
+                    <a href="{LastPage}">&#9654;</a>
+                {/block:LastPage}
+            
+            {/block:Pagination}
+            </div>
+            <div class="theme-info">
+                Made by Waldomiro Barbosa ©
+            </div>
+        </div>
+
+    </body>
+</html>
